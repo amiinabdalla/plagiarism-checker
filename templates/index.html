@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plagiarism Checker</title>
+<style>
+/* ===== Labada midab: BULUUG iyo CADAAN ===== */
+:root{--blue:#1550e6;--white:#ffffff;--line:rgba(21,80,230,.25);--soft:rgba(21,80,230,.08)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:var(--white);color:var(--blue)}
+
+/* ===== Hero (kor buluug ah) + goobo dhaqdhaqaaq ah ===== */
+.hero{position:relative;overflow:hidden;background:var(--blue);color:var(--white);padding:48px 16px 110px;text-align:center}
+.hero h1{margin:0 0 10px;font-size:clamp(1.7rem,4.5vw,2.6rem);animation:down .8s ease both}
+.hero p{margin:0 auto;max-width:600px;opacity:.9;animation:down .8s .15s ease both}
+.logo{width:64px;height:64px;margin:0 auto 14px;animation:pop .7s ease both}
+.bubble{position:absolute;border-radius:50%;background:rgba(255,255,255,.12);animation:float 7s ease-in-out infinite}
+.b1{width:160px;height:160px;left:6%;top:20%}
+.b2{width:90px;height:90px;right:10%;top:12%;animation-delay:1.5s}
+.b3{width:120px;height:120px;right:25%;bottom:-40px;animation-delay:3s}
+
+main{max-width:900px;margin:-80px auto 40px;padding:0 16px;position:relative}
+.card{background:var(--white);border:2px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 10px 30px rgba(21,80,230,.15);animation:up .7s ease both}
+textarea{width:100%;min-height:210px;padding:12px;font:inherit;color:var(--blue);border:2px solid var(--line);border-radius:10px;resize:vertical;transition:border-color .2s,box-shadow .2s}
+textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--soft)}
+.row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:10px 0}
+.counter{font-size:.9rem;opacity:.8}
+.upload{display:block;border:2px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.upload:hover{background:var(--soft);border-color:var(--blue)}
+.upload input{display:none}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;padding:13px 26px;border:2px solid var(--blue);transition:transform .15s,box-shadow .15s,background .2s}
+.go{width:100%;margin-top:14px;background:var(--blue);color:var(--white)}
+.go:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px rgba(21,80,230,.35)}
+.go:disabled{opacity:.85;cursor:wait}
+.ghost{background:var(--white);color:var(--blue);padding:8px 16px}
+.ghost:hover{background:var(--soft)}
+.spin{display:none;width:16px;height:16px;border:3px solid var(--white);border-top-color:transparent;border-radius:50%;vertical-align:-3px;margin-right:8px;animation:rot .8s linear infinite}
+.progress{display:none;height:5px;margin-top:12px;background:var(--soft);border-radius:5px;overflow:hidden}
+.progress i{display:block;height:100%;width:40%;background:var(--blue);border-radius:5px;animation:slide 1.2s ease-in-out infinite}
+.err{background:var(--blue);color:var(--white);padding:12px 16px;border-radius:10px;margin-bottom:16px;font-weight:600;animation:up .5s ease both}
+
+/* ===== Natiijada ===== */
+.result{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.gauge{position:relative;width:140px;height:140px}
+.gauge svg{transform:rotate(-90deg)}
+.gauge .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800}
+.verdict{font-size:1.3rem;font-weight:800}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);word-break:break-all}
+a{color:var(--blue)}
+.badge{display:inline-block;background:var(--blue);color:var(--white);border-radius:20px;padding:2px 12px;font-weight:700}
+.view{white-space:pre-wrap;word-break:break-word;line-height:1.7}
+mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+
+@keyframes down{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.4) rotate(-20deg)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes slide{0%{margin-left:-40%}100%{margin-left:100%}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div>
+  <svg class="logo" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 6h24l12 12v34a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z"/>
+    <path d="M38 6v12h12M18 30h18M18 38h12"/>
+    <circle cx="42" cy="44" r="7" fill="#1550e6"/><path d="M47 49l7 7"/>
+  </svg>
+  <h1>Document Plagiarism Checker</h1>
+  <p>Paste your text in one place. The system searches the internet to find out whether it matches existing content.</p>
+</header>
+
+<main>
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+  <form id="f" method="post" enctype="multipart/form-data">
+    <div class="card">
+      <textarea id="t" name="text" placeholder="Type or paste your text here"></textarea>
+      <div class="row"><span class="counter"><span id="wc">0</span> words</span></div>
+      <label class="upload"><input type="file" id="file" name="file" accept=".pdf,.docx,.txt">
+        <span id="fname">Or upload a file (.pdf .docx .txt)</span></label>
+      <button id="btn" class="go" type="submit"><span class="spin" id="spin"></span><span id="btxt">Check plagiarism</span></button>
+      <div class="progress" id="prog"><i></i></div>
+    </div>
+  </form>
+
+  {% if result %}
+  <div class="card">
+    <div class="result">
+      <div class="gauge">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(21,80,230,.15)" stroke-width="12"/>
+          <circle id="arc" cx="70" cy="70" r="60" fill="none" stroke="#1550e6" stroke-width="12" stroke-linecap="round"
+                  stroke-dasharray="377" stroke-dashoffset="377" style="transition:stroke-dashoffset 1.6s ease" data-pct="{{ result.pct }}"/>
+        </svg>
+        <div class="num"><span id="pct">0</span>%</div>
+      </div>
+      <div>
+        <div class="verdict">{{ result.verdict }}</div>
+        <p>Web pages checked: <b>{{ result.pages_checked }}</b></p>
+        {% if result.pages_checked == 0 %}<p>No results were found on the internet. Check your connection and try again.</p>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Matching sources</h3>
+    {% if result.sources %}
+    <div class="tablewrap"><table><tr><th>Source</th><th>Similarity</th></tr>
+    {% for s in result.sources %}
+      <tr><td>{% if s.url %}<a href="{{ s.url }}" target="_blank">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</td>
+      <td><span class="badge">{{ s.score }}%</span></td></tr>
+    {% endfor %}</table></div>
+    {% else %}<p>No matching source was found.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Your text (blue parts were found elsewhere)</h3>
+    <div class="view">{{ result.html|safe }}</div>
+  </div>
+  {% endif %}
+
+  <div class="card foot">
+    <span>Documents saved in the database: <b>{{ count }}</b></span>
+    <form method="post" action="/clear"><button class="ghost" type="submit">Clear database</button></form>
+  </div>
+</main>
+
+<script>
+// 1) Tirinta erayada (live)
+const t = document.getElementById("t");
+t.addEventListener("input", () => {
+  document.getElementById("wc").textContent = t.value.trim() ? t.value.trim().split(/\s+/).length : 0;
+});
+// 2) Muuji magaca faylka la doortay
+document.getElementById("file").addEventListener("change", e => {
+  document.getElementById("fname").textContent = e.target.files[0] ? e.target.files[0].name : "Or upload a file (.pdf .docx .txt)";
+});
+// 3) Marka la riixo badhanka: spinner + progress bar
+document.getElementById("f").addEventListener("submit", () => {
+  document.getElementById("btn").disabled = true;
+  document.getElementById("spin").style.display = "inline-block";
+  document.getElementById("btxt").textContent = "Searching the internet... please wait up to 30 seconds";
+  document.getElementById("prog").style.display = "block";
+});
+// 4) Natiijada: goobada ayaa buuxsama + lambarku wuu kordhaa
+const arc = document.getElementById("arc");
+if (arc) {
+  const pct = parseFloat(arc.dataset.pct);
+  setTimeout(() => { arc.style.strokeDashoffset = 377 * (1 - Math.min(pct, 100) / 100); }, 100);
+  const out = document.getElementById("pct");
+  let cur = 0;
+  const step = pct / 60;
+  const timer = setInterval(() => {
+    cur += step;
+    if (cur >= pct) { cur = pct; clearInterval(timer); }
+    out.textContent = cur.toFixed(1);
+  }, 25);
+}
+</script>
+</body>
+</html>
