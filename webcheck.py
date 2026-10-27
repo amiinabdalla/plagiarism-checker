@@ -1,7 +1,8 @@
 # QAYBTA CUSUB: RAADINTA INTERNET-KA (Web Plagiarism Check)
 import re
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 from concurrent.futures import ThreadPoolExecutor
+from itertools import zip_longest
 import requests
 from bs4 import BeautifulSoup
 from preprocess import tokenize
@@ -10,22 +11,51 @@ from similarity import ngrams
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 N = 4              # weedh = 4 eray oo isku xigta
 MAX_QUERIES = 5    # inta jeer internet-ka laga raadinayo
-MAX_PAGES = 8      # inta bog ee la akhrinayo
+MAX_PAGES = 10     # inta bog ee la akhrinayo
+REF = re.compile(r"\[[^\]]{1,20}\]")  # calaamadaha tixraaca: [1], [A], [citation needed]
+
+
+def strip_refs(text):
+    """Ka saar calaamadaha tixraaca ee Wikipedia ([1], [A]) si 4-erayada isku xigta aysan u go'in."""
+    return REF.sub(" ", text)
 
 
 def pick_queries(text):
-    """Dooro weedho kala duwan oo qoraalka ka mid ah si loo raadiyo."""
-    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if len(s.split()) >= 6]
+    """Dooro weedho qoraal dhab ah (ma aha shax/infobox) oo la raadiyo."""
+    parts = [p.strip() for p in re.split(r"(?<=[.!?])\s+|\n+", text) if p.strip()]
+
+    def is_prose(p):
+        words = p.split()
+        digits = sum(c.isdigit() for c in p)
+        return len(words) >= 10 and "\t" not in p and digits / max(len(p), 1) < 0.15
+
+    sentences = [p for p in parts if is_prose(p)]
     if not sentences:
-        sentences = [text]
+        sentences = [p for p in parts if len(p.split()) >= 6] or [text]
     step = max(1, len(sentences) // MAX_QUERIES)
     chosen = sentences[::step][:MAX_QUERIES]
-    # 12-ka eray ee ugu horreeya, ku duub xaashiyo (exact phrase)
-    return ['"' + " ".join(s.split()[:12]) + '"' for s in chosen]
+    return [" ".join(p.split()[:12]) for p in chosen]
 
 
-def search_web(query, n=5):
-    """Raadi internet-ka, soo celi liiska URL-ada."""
+def search_wikipedia(query, n=2):
+    """Raadi Wikipedia si toos ah (API rasmi ah, deggan)."""
+    try:
+        r = requests.get("https://en.wikipedia.org/w/api.php", headers=HEADERS, timeout=8,
+                         params={"action": "query", "list": "search", "srsearch": query,
+                                 "srlimit": n, "format": "json"})
+        return ["https://en.wikipedia.org/wiki/" + quote(it["title"].replace(" ", "_"))
+                for it in r.json()["query"]["search"]]
+    except Exception:
+        return []
+
+
+def search_web(query):
+    """Wikipedia + DuckDuckGo."""
+    return search_wikipedia(query) + search_ddg('"' + query + '"')
+
+
+def search_ddg(query, n=5):
+    """Raadi DuckDuckGo, soo celi liiska URL-ada."""
     try:  # Habka 1: maktabadda ddgs
         from ddgs import DDGS
         results = DDGS().text(query, max_results=n)
@@ -57,7 +87,7 @@ def fetch_text(url):
         soup = BeautifulSoup(r.text, "html.parser")
         for tag in soup(["script", "style", "nav", "footer"]):
             tag.decompose()
-        return soup.get_text(" ")[:300000]
+        return strip_refs(soup.get_text(" "))[:300000]
     except Exception:
         return ""
 
@@ -86,13 +116,15 @@ def check_text(text, local_docs):
         add("Database: " + title + " (" + created + ")", "", matches(mine, doc))
 
     # 2) Internet
-    urls = []
-    for q in pick_queries(text):
-        for u in search_web(q):
-            if u not in urls:
-                urls.append(u)
-    urls = urls[:MAX_PAGES]
-    with ThreadPoolExecutor(max_workers=4) as pool:  # bogagga si wada jir ah u akhri
+    queries = pick_queries(text)
+    with ThreadPoolExecutor(max_workers=4) as pool:  # raadinta iyo akhrinta si wada jir ah
+        found = list(pool.map(search_web, queries))
+        urls = []
+        for group in zip_longest(*found):  # weedh walba natiijo ka qaado (isku-beddel)
+            for u in group:
+                if u and u not in urls:
+                    urls.append(u)
+        urls = urls[:MAX_PAGES]
         pages = list(pool.map(fetch_text, urls))
     for u, page in zip(urls, pages):
         if page:
