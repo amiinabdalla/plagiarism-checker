@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect
 from extract import extract_text
 from similarity import highlight
-from webcheck import check_text, verdict
+from webcheck import check_text, verdict, strip_refs
 
 app = Flask(__name__)
 DB = "history.db"
@@ -30,6 +30,7 @@ def index():
             title, text = file.filename, extract_text(file)
         else:
             title, text = "Typed text", request.form.get("text", "")
+        text = strip_refs(text)  # ka saar [1], [A] iwm.
         if len(text.split()) < 8:
             error = "The text is too short (at least 8 words required)."
         else:
@@ -53,7 +54,6 @@ def clear():
     return redirect("/")
 
 
-init_db()
-
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True)
