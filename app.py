@@ -19,7 +19,7 @@ def init_db():
         con.execute("""CREATE TABLE IF NOT EXISTS documents(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT, body TEXT, created TEXT)""")
-
+init_db()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
