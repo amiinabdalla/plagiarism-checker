@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plagiarism Checker</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231550e6'/%3E%3Cpath d='M18 12h20l10 10v28a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z' fill='none' stroke='white' stroke-width='4' stroke-linejoin='round'/%3E%3Ccircle cx='40' cy='40' r='8' fill='%231550e6' stroke='white' stroke-width='4'/%3E%3Cpath d='M46 46l8 8' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231550e6'/%3E%3Cpath d='M18 12h20l10 10v28a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z' fill='none' stroke='white' stroke-width='4' stroke-linejoin='round'/%3E%3Ccircle cx='40' cy='40' r='8' fill='%231550e6' stroke='white' stroke-width='4'/%3E%3Cpath d='M46 46l8 8' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 /* ===== Labada midab: BULUUG iyo CADAAN ===== */
 :root{--blue:#1550e6;--white:#ffffff;--line:rgba(21,80,230,.25);--soft:rgba(21,80,230,.08)}
@@ -56,6 +56,18 @@ a{color:var(--blue)}
 mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px}
 .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.actions button{width:auto;margin:0}
+.printhead{display:none}
+@media print{
+  .hero,form,.actions,.foot,.bubble{display:none!important}
+  body{background:#fff}
+  main{margin:0;max-width:none;padding:0}
+  .card{box-shadow:none;animation:none;border:1px solid #1550e6;break-inside:avoid}
+  .printhead{display:block;margin-bottom:14px}
+  mark,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
 @keyframes down{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes pop{from{opacity:0;transform:scale(.4) rotate(-20deg)}to{opacity:1;transform:none}}
@@ -92,6 +104,7 @@ mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px
   </form>
 
   {% if result %}
+  <div class="printhead"><h2 style="margin:0">Document Plagiarism Checker: Report</h2><p id="stamp"></p></div>
   <div class="card">
     <div class="result">
       <div class="gauge">
@@ -107,6 +120,10 @@ mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px
         <p>Web pages checked: <b>{{ result.pages_checked }}</b></p>
         {% if result.pages_checked == 0 %}<p>No results were found on the internet. Check your connection and try again.</p>{% endif %}
       </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="go" onclick="window.print()">Download PDF report</button>
+      <button type="button" class="ghost" onclick="downloadTxt()">Download text report (.txt)</button>
     </div>
   </div>
 
@@ -163,6 +180,38 @@ if (arc) {
     if (cur >= pct) { cur = pct; clearInterval(timer); }
     out.textContent = cur.toFixed(1);
   }, 25);
+}
+
+// 5) Export: PDF (Print -> Save as PDF) iyo fayl .txt
+const stamp = document.getElementById("stamp");
+if (stamp) stamp.textContent = "Date: " + new Date().toLocaleString();
+
+function downloadTxt() {
+  const rows = [...document.querySelectorAll(".tablewrap tr")].slice(1)
+    .map(tr => [...tr.children].map(td => td.innerText.trim()).join("  |  "));
+  const body = [...document.querySelector(".view").childNodes]
+    .map(n => n.nodeName === "MARK" ? "[[" + n.textContent + "]]" : n.textContent).join("");
+  const verdictBox = document.querySelector(".verdict");
+  const lines = [
+    "DOCUMENT PLAGIARISM CHECKER: REPORT",
+    "Date: " + new Date().toLocaleString(),
+    "",
+    "Result: " + arc.dataset.pct + "%",
+    "Verdict: " + verdictBox.innerText,
+    verdictBox.parentElement.querySelector("p").innerText,
+    "",
+    "MATCHING SOURCES",
+    ...(rows.length ? rows : ["No matching source was found."]),
+    "",
+    "CHECKED TEXT  ([[ ]] = text found elsewhere)",
+    body
+  ];
+  const blob = new Blob([lines.join("\n")], {type: "text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "plagiarism-report.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 </script>
 </body>
