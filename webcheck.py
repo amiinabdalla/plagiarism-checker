@@ -136,8 +136,9 @@ def check_text(text, local_docs):
 
 
 def verdict(pct):
+    """CHANGED [Wording]: nidaamku wuxuu cabbiraa is-ekaansho, ma go'aamiyo plagiarism."""
     if pct < 15:
-        return "Original text: no copied content found"
+        return "Low Similarity: no significant matches found"
     if pct < 40:
-        return "Some parts may have been copied"
-    return "Plagiarized: copied content found"
+        return "Moderate Similarity: some parts match other sources"
+    return "High Similarity: large parts match other sources"
