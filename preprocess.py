@@ -1,20 +1,15 @@
 # QAYBTA 1: NADIINTA QORAALKA (Text Preprocessing)
 import re
-import nltk
-from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-
-# Soo dejiso liiska stop words (mar keliya ayuu soo dejisanayaa)
-try:
-    stopwords.words("english")
-except LookupError:
-    nltk.download("stopwords")
+# CHANGED [Bug 2]: stop words waxay hadda ka yimaadaan scikit-learn, download looma baahna
+# (hore waxaa loo isticmaali jiray nltk.download, kaas oo app-ka ka joojin jiray inuu furmo).
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 # Erayada aan muhiimka ahayn: Ingiriis + Soomaali
 SOMALI_STOP = {"iyo", "oo", "ee", "ku", "ka", "u", "la", "waa", "ayaa", "uu", "ay", "aan", "ah", "in", "ma", "si"}
-STOP = set(stopwords.words("english")) | SOMALI_STOP
+STOP = set(ENGLISH_STOP_WORDS) | SOMALI_STOP
 
-stemmer = PorterStemmer()  # "running" -> "run"
+stemmer = PorterStemmer()  # "running" -> "run" (Ingiriis oo keliya)
 
 
 def tokenize(text):
