@@ -35,7 +35,8 @@ def shared_ngrams(a, b, n=3):
 def overlap_score(a, b, n=3):
     """Boqolkiiba intee ka mid ah 3-erayda A ayaa ku jira B."""
     ga = ngrams(tokenize(a), n)
-    return len([g for g in ga if g in set(ngrams(tokenize(b), n))]) / len(ga) if ga else 0.0
+    sb = set(ngrams(tokenize(b), n))  # CHANGED: set mar keliya la sameeyo (hore wuxuu dib u sameyn jiray mar walba, aad buu u gaabin jiray)
+    return len([g for g in ga if g in sb]) / len(ga) if ga else 0.0
 
 
 def highlight(text, shared, n=3):
@@ -58,3 +59,13 @@ def highlight(text, shared, n=3):
         else:
             i += 1
     return out + escape(text[pos:])
+
+
+# CHANGED [Rules 70/40]: xeerarka IF-THEN ee dukumentiga (Chapter 1, 3.2)
+def classify(score):
+    """score waa boqolley (0 ilaa 100). >=70 High, >=40 Moderate, haddii kale Low."""
+    if score >= 70:
+        return "High Similarity"
+    if score >= 40:
+        return "Moderate Similarity"
+    return "Low Similarity"
