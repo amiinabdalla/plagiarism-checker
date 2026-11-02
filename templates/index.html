@@ -10,8 +10,6 @@
 :root{--blue:#1550e6;--white:#ffffff;--line:rgba(21,80,230,.25);--soft:rgba(21,80,230,.08)}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:var(--white);color:var(--blue)}
-
-/* ===== Hero (kor buluug ah) + goobo dhaqdhaqaaq ah ===== */
 .hero{position:relative;overflow:hidden;background:var(--blue);color:var(--white);padding:48px 16px 110px;text-align:center}
 .hero h1{margin:0 0 10px;font-size:clamp(1.7rem,4.5vw,2.6rem);animation:down .8s ease both}
 .hero p{margin:0 auto;max-width:600px;opacity:.9;animation:down .8s .15s ease both}
@@ -20,16 +18,22 @@ body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:var(--white
 .b1{width:160px;height:160px;left:6%;top:20%}
 .b2{width:90px;height:90px;right:10%;top:12%;animation-delay:1.5s}
 .b3{width:120px;height:120px;right:25%;bottom:-40px;animation-delay:3s}
-
 main{max-width:900px;margin:-80px auto 40px;padding:0 16px;position:relative}
 .card{background:var(--white);border:2px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 10px 30px rgba(21,80,230,.15);animation:up .7s ease both}
-textarea{width:100%;min-height:210px;padding:12px;font:inherit;color:var(--blue);border:2px solid var(--line);border-radius:10px;resize:vertical;transition:border-color .2s,box-shadow .2s}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{flex:1;background:var(--white);color:var(--blue);padding:12px;box-shadow:0 4px 12px rgba(21,80,230,.15)}
+.tab.on{background:var(--blue);color:var(--white)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+textarea{width:100%;min-height:190px;padding:12px;font:inherit;color:var(--blue);border:2px solid var(--line);border-radius:10px;resize:vertical;transition:border-color .2s,box-shadow .2s}
 textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--soft)}
-.row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:10px 0}
-.counter{font-size:.9rem;opacity:.8}
-.upload{display:block;border:2px dashed var(--line);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.counter{font-size:.9rem;opacity:.8;display:block;margin:6px 0 10px}
+.upload{display:block;border:2px dashed var(--line);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:6px}
 .upload:hover{background:var(--soft);border-color:var(--blue)}
 .upload input{display:none}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-weight:600}
+.check input{margin-top:4px;accent-color:var(--blue);width:18px;height:18px}
+.note{font-size:.85rem;opacity:.85;margin:6px 0 0}
 button{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;padding:13px 26px;border:2px solid var(--blue);transition:transform .15s,box-shadow .15s,background .2s}
 .go{width:100%;margin-top:14px;background:var(--blue);color:var(--white)}
 .go:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px rgba(21,80,230,.35)}
@@ -40,13 +44,13 @@ button{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;padding:13
 .progress{display:none;height:5px;margin-top:12px;background:var(--soft);border-radius:5px;overflow:hidden}
 .progress i{display:block;height:100%;width:40%;background:var(--blue);border-radius:5px;animation:slide 1.2s ease-in-out infinite}
 .err{background:var(--blue);color:var(--white);padding:12px 16px;border-radius:10px;margin-bottom:16px;font-weight:600;animation:up .5s ease both}
-
-/* ===== Natiijada ===== */
 .result{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .gauge{position:relative;width:140px;height:140px}
 .gauge svg{transform:rotate(-90deg)}
 .gauge .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800}
 .verdict{font-size:1.3rem;font-weight:800}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.actions button{width:auto;margin:0}
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);word-break:break-all}
@@ -55,19 +59,16 @@ a{color:var(--blue)}
 .view{white-space:pre-wrap;word-break:break-word;line-height:1.7}
 mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px}
 .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.actions button{width:auto;margin:0}
+.foot input{padding:8px;border:2px solid var(--line);border-radius:8px;font:inherit;color:var(--blue)}
 .printhead{display:none}
 @media print{
-  .hero,form,.actions,.foot,.bubble{display:none!important}
+  .hero,.tabs,form,.actions,.foot,.bubble{display:none!important}
   body{background:#fff}
   main{margin:0;max-width:none;padding:0}
   .card{box-shadow:none;animation:none;border:1px solid #1550e6;break-inside:avoid}
   .printhead{display:block;margin-bottom:14px}
   mark,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-
 @keyframes down{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @keyframes pop{from{opacity:0;transform:scale(.4) rotate(-20deg)}to{opacity:1;transform:none}}
@@ -86,21 +87,48 @@ mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px
     <circle cx="42" cy="44" r="7" fill="#1550e6"/><path d="M47 49l7 7"/>
   </svg>
   <h1>Document Plagiarism Checker</h1>
-  <p>Paste your text in one place. The system searches the internet to find out whether it matches existing content.</p>
+  <p>Measure how similar two documents are, or check a text against the internet.</p>
 </header>
 
 <main>
   {% if error %}<div class="err">{{ error }}</div>{% endif %}
 
-  <form id="f" method="post" enctype="multipart/form-data">
-    <div class="card">
-      <textarea id="t" name="text" placeholder="Type or paste your text here"></textarea>
-      <div class="row"><span class="counter"><span id="wc">0</span> words</span></div>
-      <label class="upload"><input type="file" id="file" name="file" accept=".pdf,.docx,.txt">
-        <span id="fname">Or upload a file (.pdf .docx .txt)</span></label>
-      <button id="btn" class="go" type="submit"><span class="spin" id="spin"></span><span id="btxt">Check plagiarism</span></button>
-      <div class="progress" id="prog"><i></i></div>
+  <div class="tabs">
+    <button type="button" class="tab" id="tab-compare" onclick="showMode('compare')">Compare two documents</button>
+    <button type="button" class="tab" id="tab-web" onclick="showMode('web')">Check against the internet</button>
+  </div>
+
+  <!-- MODE 1: Compare two documents (TF-IDF + cosine) -->
+  <form class="panel card" id="panel-compare" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="compare">
+    <div class="two">
+      <div>
+        <b>Document A</b>
+        <textarea name="text_a" placeholder="Type or paste document A"></textarea>
+        <span class="counter"><span class="wc">0</span> words</span>
+        <label class="upload"><input type="file" name="file_a" accept=".pdf,.docx,.txt"><span data-default="Or upload a file (.pdf .docx .txt)">Or upload a file (.pdf .docx .txt)</span></label>
+      </div>
+      <div>
+        <b>Document B</b>
+        <textarea name="text_b" placeholder="Type or paste document B"></textarea>
+        <span class="counter"><span class="wc">0</span> words</span>
+        <label class="upload"><input type="file" name="file_b" accept=".pdf,.docx,.txt"><span data-default="Or upload a file (.pdf .docx .txt)">Or upload a file (.pdf .docx .txt)</span></label>
+      </div>
     </div>
+    <button type="submit" class="go" data-busy="Comparing..."><span class="spin"></span><span class="btxt">Compare documents</span></button>
+    <div class="progress"><i></i></div>
+  </form>
+
+  <!-- MODE 2: Check against the internet -->
+  <form class="panel card" id="panel-web" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="mode" value="web">
+    <textarea name="text_w" placeholder="Type or paste your text here"></textarea>
+    <span class="counter"><span class="wc">0</span> words</span>
+    <label class="upload"><input type="file" name="file_w" accept=".pdf,.docx,.txt"><span data-default="Or upload a file (.pdf .docx .txt)">Or upload a file (.pdf .docx .txt)</span></label>
+    <label class="check"><input type="checkbox" name="save" value="1"> Save this text to the database</label>
+    <p class="note">Your text is stored only if this box is ticked. Saved texts are used to compare future submissions, so do not save confidential documents. Files up to 10 MB are accepted.</p>
+    <button type="submit" class="go" data-busy="Searching the internet... please wait up to 60 seconds"><span class="spin"></span><span class="btxt">Check against the internet</span></button>
+    <div class="progress"><i></i></div>
   </form>
 
   {% if result %}
@@ -116,9 +144,15 @@ mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px
         <div class="num"><span id="pct">0</span>%</div>
       </div>
       <div>
+        {% if result.mode == 'compare' %}
+        <div class="verdict">{{ result.level }}</div>
+        <p class="meta">TF-IDF cosine similarity. Jaccard: {{ result.jaccard }}%. 4-word overlap: {{ result.overlap }}%.</p>
+        {% else %}
         <div class="verdict">{{ result.verdict }}</div>
-        <p>Web pages checked: <b>{{ result.pages_checked }}</b></p>
-        {% if result.pages_checked == 0 %}<p>No results were found on the internet. Check your connection and try again.</p>{% endif %}
+        <p class="meta">Web pages checked: {{ result.pages_checked }}{% if result.saved %}. This text was saved to the database.{% endif %}</p>
+        {% if result.pages_checked == 0 %}<p class="note">No results were found on the internet. Check your connection and try again.</p>{% endif %}
+        {% endif %}
+        <p class="note">This tool measures text similarity. It does not decide whether plagiarism occurred; a human reviewer must judge.</p>
       </div>
     </div>
     <div class="actions">
@@ -127,47 +161,73 @@ mark{background:var(--blue);color:var(--white);border-radius:4px;padding:1px 4px
     </div>
   </div>
 
+  {% if result.mode == 'web' %}
   <div class="card">
     <h3>Matching sources</h3>
+    <div class="tablewrap">
     {% if result.sources %}
-    <div class="tablewrap"><table><tr><th>Source</th><th>Similarity</th></tr>
-    {% for s in result.sources %}
-      <tr><td>{% if s.url %}<a href="{{ s.url }}" target="_blank">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</td>
-      <td><span class="badge">{{ s.score }}%</span></td></tr>
-    {% endfor %}</table></div>
+      <table><tr><th>Source</th><th>Similarity</th></tr>
+      {% for s in result.sources %}
+        <tr><td>{% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}</td>
+        <td><span class="badge">{{ s.score }}%</span></td></tr>
+      {% endfor %}</table>
     {% else %}<p>No matching source was found.</p>{% endif %}
+    </div>
   </div>
-
   <div class="card">
     <h3>Your text (blue parts were found elsewhere)</h3>
     <div class="view">{{ result.html|safe }}</div>
   </div>
+  {% else %}
+  <div class="card two">
+    <div><h3>Document A</h3><div class="view">{{ result.html_a|safe }}</div></div>
+    <div><h3>Document B</h3><div class="view">{{ result.html_b|safe }}</div></div>
+  </div>
+  {% endif %}
   {% endif %}
 
   <div class="card foot">
     <span>Documents saved in the database: <b>{{ count }}</b></span>
-    <form method="post" action="/clear"><button class="ghost" type="submit">Clear database</button></form>
+    {% if clear_enabled %}
+    <form method="post" action="/clear" style="display:flex;gap:8px;flex-wrap:wrap">
+      {% if need_key %}<input type="password" name="key" placeholder="Admin key" required>{% endif %}
+      <button class="ghost" type="submit">Clear database</button>
+    </form>
+    {% endif %}
   </div>
 </main>
 
 <script>
-// 1) Tirinta erayada (live)
-const t = document.getElementById("t");
-t.addEventListener("input", () => {
-  document.getElementById("wc").textContent = t.value.trim() ? t.value.trim().split(/\s+/).length : 0;
-});
-// 2) Muuji magaca faylka la doortay
-document.getElementById("file").addEventListener("change", e => {
-  document.getElementById("fname").textContent = e.target.files[0] ? e.target.files[0].name : "Or upload a file (.pdf .docx .txt)";
-});
-// 3) Marka la riixo badhanka: spinner + progress bar
-document.getElementById("f").addEventListener("submit", () => {
-  document.getElementById("btn").disabled = true;
-  document.getElementById("spin").style.display = "inline-block";
-  document.getElementById("btxt").textContent = "Searching the internet... please wait up to 30 seconds";
-  document.getElementById("prog").style.display = "block";
-});
-// 4) Natiijada: goobada ayaa buuxsama + lambarku wuu kordhaa
+// 1) Tabs: labada mode
+function showMode(m) {
+  document.getElementById("panel-compare").style.display = m === "compare" ? "block" : "none";
+  document.getElementById("panel-web").style.display = m === "web" ? "block" : "none";
+  document.getElementById("tab-compare").classList.toggle("on", m === "compare");
+  document.getElementById("tab-web").classList.toggle("on", m === "web");
+}
+showMode("{{ mode }}");
+
+// 2) Tirinta erayada (live)
+document.querySelectorAll("textarea").forEach(t => t.addEventListener("input", () => {
+  t.parentElement.querySelector(".wc").textContent = t.value.trim() ? t.value.trim().split(/\s+/).length : 0;
+}));
+
+// 3) Magaca faylka la doortay
+document.querySelectorAll(".upload input").forEach(inp => inp.addEventListener("change", () => {
+  const span = inp.nextElementSibling;
+  span.textContent = inp.files[0] ? inp.files[0].name : span.dataset.default;
+}));
+
+// 4) Marka la riixo badhanka: spinner + progress bar
+document.querySelectorAll("form.panel").forEach(f => f.addEventListener("submit", () => {
+  const b = f.querySelector(".go");
+  b.disabled = true;
+  f.querySelector(".spin").style.display = "inline-block";
+  f.querySelector(".btxt").textContent = b.dataset.busy;
+  f.querySelector(".progress").style.display = "block";
+}));
+
+// 5) Natiijada: goobada ayaa buuxsama + lambarku wuu kordhaa
 const arc = document.getElementById("arc");
 if (arc) {
   const pct = parseFloat(arc.dataset.pct);
@@ -182,30 +242,33 @@ if (arc) {
   }, 25);
 }
 
-// 5) Export: PDF (Print -> Save as PDF) iyo fayl .txt
+// 6) Export: PDF (Print -> Save as PDF) iyo fayl .txt
 const stamp = document.getElementById("stamp");
 if (stamp) stamp.textContent = "Date: " + new Date().toLocaleString();
 
+function markedText(v) {
+  return [...v.childNodes].map(n => n.nodeName === "MARK" ? "[[" + n.textContent + "]]" : n.textContent).join("");
+}
 function downloadTxt() {
+  const views = [...document.querySelectorAll(".view")];
   const rows = [...document.querySelectorAll(".tablewrap tr")].slice(1)
     .map(tr => [...tr.children].map(td => td.innerText.trim()).join("  |  "));
-  const body = [...document.querySelector(".view").childNodes]
-    .map(n => n.nodeName === "MARK" ? "[[" + n.textContent + "]]" : n.textContent).join("");
-  const verdictBox = document.querySelector(".verdict");
   const lines = [
     "DOCUMENT PLAGIARISM CHECKER: REPORT",
     "Date: " + new Date().toLocaleString(),
     "",
     "Result: " + arc.dataset.pct + "%",
-    "Verdict: " + verdictBox.innerText,
-    verdictBox.parentElement.querySelector("p").innerText,
-    "",
-    "MATCHING SOURCES",
-    ...(rows.length ? rows : ["No matching source was found."]),
-    "",
-    "CHECKED TEXT  ([[ ]] = text found elsewhere)",
-    body
+    "Assessment: " + document.querySelector(".verdict").innerText,
+    document.querySelector(".meta").innerText,
+    ""
   ];
+  if (document.querySelector(".tablewrap")) {
+    lines.push("MATCHING SOURCES", ...(rows.length ? rows : ["No matching source was found."]), "");
+  }
+  views.forEach((v, i) => {
+    lines.push((views.length > 1 ? "DOCUMENT " + "AB"[i] : "CHECKED TEXT") + " ([[ ]] = matching text)", markedText(v), "");
+  });
+  lines.push("Note: this tool measures similarity; it does not decide whether plagiarism occurred.");
   const blob = new Blob([lines.join("\n")], {type: "text/plain;charset=utf-8"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
